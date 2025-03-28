@@ -1,0 +1,17 @@
+version: '3'
+
+tasks:
+  start-containers:
+    cmds:
+      - docker compose up -d
+
+  set-env:
+    cmds:
+      - source .venv/bin/activate
+
+  start:
+    deps: [start-containers, set-env, run]
+
+  run:
+    cmds:
+      - python3 src/main.py

@@ -1,0 +1,28 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/postgres
+{
+	"name": "MoKITUL DevContainer",
+
+	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	
+	"features": {
+		"ghcr.io/devcontainers/features/python": {},
+		"ghcr.io/devcontainers-contrib/features/poetry:2": {}
+	},
+
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"runArgs": ["--network=host"],
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"mongodb.mongodb-vscode",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"rangav.vscode-thunder-client"
+			]
+		}
+	}
+}
