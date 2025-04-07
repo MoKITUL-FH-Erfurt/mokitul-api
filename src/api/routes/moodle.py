@@ -1,81 +1,18 @@
-import os
-from typing import List
-from api.chat_engine import get_query_engine_memoized
-from api.utils.chains import get_llm
-from api.utils.downloads import build_moodle_download_url, download, download_file
-from definitions import DATA_DIR
+import logging
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
 
-from llama_index.core.chat_engine import CondenseQuestionChatEngine,SimpleChatEngine
 
-from llama_index.core.query_engine import BaseQueryEngine
+logger = logging.getLogger(__name__)
 
-from llama_index.core.indices.base_retriever import BaseRetriever
-
-from llama_index.core import (
-    Settings,
-)
-
-from llama_index.core import (
-    SimpleDirectoryReader,
-
-)
 router = APIRouter()
 
-class SummarizeFileRequest(BaseModel):
-    message: str = Field(...)
-
-def split_into_chunks(text, max_length):
-    # Split the text into words
-    words = text.split()
-    chunks = []
-    current_chunk = []
-
-    current_length = 0
-    for word in words:
-        # Check if adding the next word would exceed the max_length
-        if current_length + len(word) + 1 > max_length:  # +1 for space
-            # If so, join the current_chunk into one string and add to chunks
-            chunks.append(' '.join(current_chunk))
-            # Start a new chunk
-            current_chunk = [word]
-            current_length = len(word)
-        else:
-            # If not, add the word to the current_chunk
-            current_chunk.append(word)
-            current_length += len(word) + 1  # +1 for space
-
-    # Add the last chunk if it's not empty
-    if current_chunk:
-        chunks.append(' '.join(current_chunk))
-
-    return chunks
 
 @router.get("/summary/{fileId}")
 async def summarize_single_file_from_moodle(fileId: str):
-    file_path = os.path.join(DATA_DIR, fileId + ".pdf")
+    return "not implemented"
 
-    # check if file exists
-    if (not os.path.exists(file_path)):
-        print("file does not exist")
-        print("downloading file...")
 
-        download(fileId, file_path)
-
-    documents = SimpleDirectoryReader(input_files=[file_path]).load_data()
-
-    document = documents[0]
-
-    context_length_limit = 4069
-
-    full_text = document.get_content()
-
-    chunks = split_into_chunks(full_text, context_length_limit)
-
-    Settings.llm = get_llm()
-
-    chat_engine = SimpleChatEngine.from_defaults(system_prompt="""You are an excellent academic paper reviewer. You conduct paper summarization on the full paper text provided by the user, with following instructions:
+system_prompt = """You are an excellent academic paper reviewer. You conduct paper summarization on the full paper text provided by the user, with following instructions:
 
 REVIEW INSTRUCTION:
 
@@ -108,14 +45,4 @@ OUTPUT INSTRUCTIONS:
 2. Format your output in HTML using HTML-Elements (h1,h2,h3, ul,li, div, span, p).
 3. Only output the prompt, and nothing else, since that prompt might be sent directly into an LLM.
 
-PAPER TEXT INPUT:""")
-
-    summaries = []
-    for chunk in chunks:
-        response = chat_engine.chat(message="Please provide a summary of the following piece of a document: " + chunk)
-
-        summaries.append(response.__str__())
-
-    response = chat_engine.chat(message="Please provide a single cohesive summary using the following summaries for chunks of a document: " + "".join(summaries))
-
-    return { 'success': True, 'response': response.__str__()}
+PAPER TEXT INPUT:"""

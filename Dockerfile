@@ -6,7 +6,7 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-ARG PYTHON_VERSION=3.12.5
+ARG PYTHON_VERSION=3.12.9
 FROM python:${PYTHON_VERSION}-slim as base
 
 # Prevents Python from writing pyc files.
@@ -26,8 +26,8 @@ WORKDIR /app
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+  build-essential \
+  && rm -rf /var/lib/apt/lists/*
 RUN apt-get install -y g++
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt

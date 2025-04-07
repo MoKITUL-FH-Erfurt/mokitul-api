@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "3.12.5"
+python = "3.12.9"
 pymongo = "4.9"
 fastapi = "0.115"
 pydantic = "2.9"
@@ -21,6 +21,14 @@ llama-index-vector-stores-chroma = "0.4"
 langchain = "0.3.7"
 requests = "2.32.3"
 fitz = "^0.0.1.dev2"
+qdrant-client = "^1.13.3"
+llama-index-vector-stores-qdrant = "^0.4.3"
+llama-index-postprocessor-colbert-rerank = "^0.3.0"
+llama-index-embeddings-fastembed = "^0.3.0"
+marker-pdf = "^1.6.1"
+testcontainers = "^4.9.2"
+einops = "^0.8.1"
+pypdf2 = "^3.0.1"
 
 [build-system]
 requires = ["poetry-core"]

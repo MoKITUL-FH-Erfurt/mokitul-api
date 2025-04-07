@@ -1,239 +1,212 @@
-import os
-from typing import Annotated, List, Optional
 import logging
 
+from api.model import (
+    ChatScope,
+    Conversation,
+    Message,
+    MessageRequest,
+    ResponseMessage,
+)
+from api.utils.chains import get_posix_timestamp
+from fastapi import APIRouter
+
 from llama_index.core.llms import ChatMessage, MessageRole
-from llama_index.readers.file.docs.base import Path
-from api.chat_engine import get_chat_engine
-from api.storage import get_chroma_index
-from api.utils.chains import get_llm
-from api.utils.downloads import download, get_file_ids_for_course
-from bson import ObjectId
-from definitions import DATA_DIR
-from llama_index.core import SimpleDirectoryReader
-from llama_index.core.chat_engine import SimpleChatEngine
-from llama_index.core.chat_engine.types import ChatMode
-from llama_index.readers.file import PDFReader, PyMuPDFReader
-from pydantic import BaseModel, BeforeValidator, Field
-from llama_index.core.vector_stores import MetadataFilter, MetadataFilters, FilterOperator
+from pydantic import BaseModel
+from usecases.conversation_usecases import ConversationUsecases
+from usecases.convert_pdf_to_markdown import PdfConverterUsecase
+from usecases.download_file_from_moodle import MoodleUsecase
+from usecases.ask_llm import AskLLMUsecase
+from usecases.llm import LLMResponse
+from usecases.model.dto import Document
+from usecases.vector_db import VectorDBUsecases
 
-
-
-
-PyObjectId = Annotated[str, BeforeValidator(str)]
-
-class Context(BaseModel):
-    fileIds: List[str] = Field(default=[])
-    courseId: str | None = Field(default=None)
-
-class Message(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=ObjectId())
-    role: str = Field(...)
-    content: str = Field(...)
-    # created_at: str = Field(default=datetime.now().isoformat())
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": [
-                {
-                    "role": "user",
-                    "content": "Hello, how are you?",
-                }
-            ]
-        }
-    }
-
-class Conversation(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    user: str = Field(...)
-    messages: List[Message] = Field(default=[])
-    context: Context = Field(...)
-    timestamp: str | None = Field(default=None)
-    summary: str | None = Field(default=None)
-
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": [
-                {
-                    "user": "1",
-                    "messages": [],
-                    "context": {
-                        "fileIds": ["2", "4"],
-                        "courseId": "1"
-                    }
-                }
-            ]
-        }
-    }
-
-# ----------------------------------------
-# ----------------------------------------
+logger = logging.getLogger(__name__)
 
 
 def map_message(message: Message):
-    return ChatMessage(role=MessageRole(message.role), content=message.content, additional_kwargs={})
+    return ChatMessage(
+        role=MessageRole(message.role), content=message.content, additional_kwargs={}
+    )
 
 
 def map_messages(messages: list[Message]):
     return [map_message(message) for message in messages]
 
+
 # v1 of the app
 
-from fastapi import APIRouter
-from api.database import database
 
-conversations_collection = database.get_collection("conversations")
+class ConvesationAPIConfig(BaseModel):
+    start_llm_path: bool
 
-router = APIRouter()
-@router.get("/")
-async def get_conversation(user_id: str, course_id: str | None = None, file_id: str | None = None):
-    if not course_id and not file_id:
-        entities = conversations_collection.find({ "user": user_id })
 
-    elif course_id and not file_id:
-        entities = conversations_collection.find({ "context.courseId": course_id, "user": user_id })
+class ConversationAPI:
+    _config: ConvesationAPIConfig
+    _router: APIRouter
 
-    elif not course_id and file_id:
-        entities = conversations_collection.find({ "user": user_id, "context.fileIds": str(file_id) })
+    def __init__(self, config: ConvesationAPIConfig) -> None:
+        self._config = config
+        self._router = APIRouter()
+        if config.start_llm_path:
+            self.register_llm_path()
+        self.register_basic_api()
 
-    elif course_id and file_id:
-        entities = conversations_collection.find({ "context.courseId": course_id, "user": user_id, "context.fileIds": str(file_id) })
+    def get_rounter(self) -> APIRouter:
+        return self._router
 
-    conversations = []
-    async for conversation in entities:
-        conversations.append(Conversation(**conversation))
-
-    return conversations
-
-@router.post("/")
-async def create_conversation(conversation: Conversation):
-    print(conversation)
-
-    result = await conversations_collection.insert_one(conversation.model_dump(by_alias=True, exclude={"id"}))
-
-    inserted_conversation_id: ObjectId = result.inserted_id
-
-    return { 'id': inserted_conversation_id.__str__() }
-
-@router.get("/{user_id}")
-async def all_conversations(user_id: str):
-    conversations = []
-
-    async for conversation in conversations_collection.find({ "user": user_id }):
-        conversations.append(Conversation(**conversation))
-
-    return conversations
-
-class MessageRequest(BaseModel):
-    message: str = Field(...)
-
-@router.put("/{conversation_id}")
-async def update_conversation(conversation_id: str, conversation_update: dict):
-    existing_conversation = await conversations_collection.find_one({ "_id": ObjectId(conversation_id) })
-
-    if existing_conversation is None:
-        return { 'error': 'Conversation not found' }
-
-    update_data = {k: v for k, v in conversation_update.items() if k not in {"id", "_id"}}
-
-    result = await conversations_collection.update_one(
-        { "_id": ObjectId(conversation_id) },
-        { "$set": update_data }
-    )
-
-    return { 'id': conversation_id, 'modified': result.modified_count == 1 }
-
-@router.put("/{conversation_id}/message")
-async def send_message(conversation_id: str, message: MessageRequest):
-    conversation = await conversations_collection.find_one({ "_id": ObjectId(conversation_id) })
-
-    if conversation is None:
-        return { 'error': 'Conversation not found' }
-
-    conversation = Conversation(**conversation)
-
-    course_id = conversation.context.courseId
-
-    file_ids = []
-    if (course_id is not None):
-        logging.info("Getting files for course: ", conversation.context.courseId)
-        file_ids = get_file_ids_for_course(course_id)
-
-    if (conversation.context.fileIds):
-        # download the files
-        file_ids = conversation.context.fileIds + file_ids
-
-    file_ids = list(set(file_ids))
-    logging.info(f"Ensuring File IDs: {file_ids}")
-
-    index = get_chroma_index()
-
-    try:
-        file_ids.remove('')
-    except Exception as e:
-        logging.debug('did not find empty str')
-
-    for file_id in file_ids:
-
-        # download the file
-        file_path = os.path.join(DATA_DIR, file_id + ".pdf")
-
-        # check if file exists
-        if (not os.path.exists(file_path)):
-            logging.info(f"file does not exist - downloading: {file_id}")
-
-            download(file_id, file_path)
-
-            # read pdf file and convert to document
-            reader = SimpleDirectoryReader(input_files=[file_path])
-            documents = reader.load_data()
-            for document in documents:
-                if course_id is not None:
-                    document.metadata['course_id'] = course_id
-
-                document.metadata['file_id'] = file_id
-
-                logging.info('Read Document : ',vars(document))
-
-                index.insert(document)
-
-    filters = MetadataFilters(
-        filters = [
-            MetadataFilter(
-                key="file_id", operator=FilterOperator.IN, value=file_ids
+    def register_basic_api(self):
+        @self._router.get("/")
+        async def get_conversation(
+            user_id: str,
+            course_id: str | None = None,
+            file_id: str | None = None,
+            scope: str | None = None,
+        ):
+            result = await ConversationUsecases.Instance().find_by_context(
+                user_id=user_id, course_id=course_id, file_id=file_id, scope=scope
             )
-        ]
-    )
+            # await sleep(120);
+            if result.is_error():
+                raise result.get_error()
+            return result.get_ok()
 
-    chat_engine = SimpleChatEngine.from_defaults(llm=get_llm()) if (len(file_ids) == 0) else index.as_chat_engine(llm=get_llm(),chat_mode=ChatMode.CONDENSE_PLUS_CONTEXT, filters=filters)
+        @self._router.post("/")
+        async def create_conversation(conversation: Conversation):
+            logger.debug(f"Create Conversation {conversation}")
+            result = await ConversationUsecases.Instance().create_conversation(
+                conversation
+            )
+            if result.is_ok():
+                return {"id": result.get_ok()}
+            else:
+                raise result.get_error()
 
-    response = chat_engine.chat(chat_history=map_messages(conversation.messages), message=message.message)
+        @self._router.get("/{user_id}")
+        async def all_conversations(user_id: str):
+            result = await ConversationUsecases.Instance().find_user_conversations(
+                user_id=user_id
+            )
+            if result.is_error():
+                raise result.get_error()
+            return result.get_ok()
 
-    user_message = Message(role="user", content=message.message)
-    response_message = str(response)
+        @self._router.put("/{conversation_id}")
+        async def update_conversation(conversation_id: str, conversation_update: dict):
+            result = await ConversationUsecases.Instance().find_conversation(
+                conversation_id
+            )
 
-    print("Response: ", response_message)
-    print("User Message: ", user_message)
+            if result.is_error():
+                raise result.get_error()
 
-    result = await conversations_collection.update_one(
-        { "_id": ObjectId(conversation_id) },
-        { "$push": { "messages": { "$each": [user_message.model_dump(by_alias=True), Message(role="assistant", content=response_message).model_dump(by_alias=True)] } } }
-    )
+            given_conversation = Conversation(**conversation_update)
 
-    return { 'id': conversation_id, 'modified': result.modified_count == 1, 'answer': response_message }
+            result = await ConversationUsecases.Instance().update_conversation(
+                id=conversation_id, conversation=given_conversation
+            )
 
-@router.delete("/{conversation_id}")
-async def delete_all_conversations(conversation_id: str):
-    result = await conversations_collection.delete_many({ "_id": ObjectId(conversation_id) })
+            if result.is_error():
+                raise result.get_error()
 
-    return { 'deleted_count': result.deleted_count }
+            return {"id": conversation_id}
 
-@router.put("/{conversation_id}/context/course")
-async def add_course_context(conversation_id: str, courseId: str):
-    result = await conversations_collection.update_one(
-        { "_id": ObjectId(conversation_id) },
-        { "$set": { "context.courseId": courseId } }
-    )
+        @self._router.delete("/{conversation_id}")
+        async def delete_all_conversations(conversation_id: str):
+            result = await ConversationUsecases.Instance().delete_conversation(
+                conversation_id=conversation_id
+            )
 
-    return { 'id': conversation_id }
+            if result.is_error():
+                raise result.get_error()
+
+            return
+
+        @self._router.put("/{conversation_id}/context/course")
+        async def add_course_context(conversation_id: str, courseId: str):
+            result = await ConversationUsecases.Instance().add_context(
+                conversation_id=conversation_id, courseId=courseId
+            )
+            if result.is_error():
+                raise result.get_error()
+
+            return {"id": conversation_id}
+
+    def register_llm_path(self):
+        @self._router.put("/{conversation_id}/message")
+        async def send_message(conversation_id: str, message: MessageRequest):
+            result = await ConversationUsecases.Instance().find_conversation(
+                conversation_id
+            )
+
+            if result.is_error():
+                raise result.get_error()
+            conversation = result.get_ok()
+
+            user_message = Message(
+                role="user", content=message.message, timestamp=get_posix_timestamp()
+            )
+
+            file_ids = conversation.context.fileIds
+            logger.error(conversation.context)
+            if conversation.context.scope == ChatScope.course.value:
+                assert conversation.context.courseId is not None
+                logging.info(
+                    "Getting files for course: ", conversation.context.courseId
+                )
+                file_ids = MoodleUsecase.Instance().get_file_ids_to_course(
+                    course_id=conversation.context.courseId
+                )
+
+            file_ids.remove("") if "" in file_ids else None
+            logging.info(f"Ensuring File IDs: {file_ids}")
+            if result.is_error():
+                raise result.get_error()
+
+            conversation.messages.append(user_message)
+
+            for file_id in file_ids:
+                file = MoodleUsecase.Instance().download_file(file_id=file_id)
+                if file.has_been_downloaded:
+                    metadata = {
+                        "course_id": conversation.context.courseId,
+                        "file_id": file_id,
+                        "filename": file.org_filename,
+                    }
+                    pages = PdfConverterUsecase.Instance().run(file=file.local_filename)
+
+                    VectorDBUsecases.Instance().store_doc(
+                        doc=Document(id=file_id, content=pages, metadata=metadata)
+                    )
+
+            filters = {"file_id": file_ids}
+            response = AskLLMUsecase.Instance().run(
+                messages=conversation.messages, filters=filters, model=message.model
+            )
+
+            if response.is_error():
+                raise response.get_error()
+
+            response_message: LLMResponse = response.get_ok()
+
+            result = await ConversationUsecases.Instance().appand_messages(
+                conversation_id=conversation_id,
+                messages=[
+                    user_message,
+                    Message(
+                        role="assistant",
+                        content=response_message.response,
+                        timestamp=get_posix_timestamp(),
+                        nodes=response_message.nodes,
+                    ),
+                ],
+            )
+
+            if result.is_error():
+                raise result.get_error()
+
+            return ResponseMessage(
+                conversationId=conversation_id,
+                response=response_message.response,
+                timestamp=get_posix_timestamp(),
+                nodes=response_message.nodes,
+            )

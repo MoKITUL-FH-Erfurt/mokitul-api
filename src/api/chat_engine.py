@@ -10,26 +10,30 @@ from llama_index.core import (
 
 from llama_index.core.chat_engine.types import ChatMode
 
-qa_prompt_str = (
-    "<s>[INST] <<SYS>>"
-    "Use the following context to answer the user's question. If you don't know the answer,"
-    "just say that you don't know, don't try to make up an answer."
-    "<</SYS>>"
-    "<s>[INST] Context: {context_str} Question: {query_str} Only return the helpful"
-    " answer below and nothing else. Helpful answer:[/INST]"
-)
 
-refine_prompt_str = (
-    "We have the opportunity to refine the original answer "
-    "(only if needed) with some more context below.\n"
-    "------------\n"
-    "{context_msg}\n"
-    "------------\n"
-    "Given the new context, refine the original answer to better "
-    "answer the question: {query_str}. "
-    "If the context isn't useful, output the original answer again.\n"
-    "Original Answer: {existing_answer}"
-)
+DEFAULT_CONTEXT_PROMPT_TEMPLATE = """
+Im Folgenden siehst du ein freundliches Gespräch zwischen einem Benutzer und dir dem KI-Assistenten.
+Du bist gesprächig und lieferst viele spezifische Details aus seinem Kontext.
+Wenn du die Antwort auf eine Frage nicht weiß, sagst du wahrheitsgemäß, dass du es nicht weißt.
+
+Hier sind die relevanten Dokumente für den Kontext:
+
+{context_str}
+
+Anweisung: Gebe auf die oben genannten Dokumente eine ausführliche Antwort auf die nachstehende Benutzerfrage.
+Referenziere immer auf welches Dokument du dich beziehst ohne den retrieval_score. Nenne ausschließlich den Dokumentnamen!
+Beantworten die Frage mit „weiß nicht“, wenn du nichts in dem Dokument enthalten ist.
+"""
+
+DEFAULT_CONDENSE_PROMPT_TEMPLATE = """
+Geben die folgende Konversation zwischen einem Benutzer und einem KI-Assistenten und eine Folgefrage des Benutzers an,
+formuliere die Folgefrage so um, dass sie eine eigenständige Frage ist. 
+Es wird in eine Vektordatenbank eingespeist um relevante Dokumente zu finden.
+
+Chat-Verlauf:
+{chat_history}
+Folge-Eingabe: {question}
+Eigenständige Frage:"""
 
 chat_text_qa_msgs = [
     (
@@ -49,6 +53,7 @@ chat_refine_msgs = [
 ]
 refine_template = ChatPromptTemplate.from_messages(chat_refine_msgs)
 
+
 def get_query_engine(files: list[str] | None = None):
     Settings.llm = get_llm()
     Settings.embed_model = get_embedding_model()
@@ -61,6 +66,7 @@ def get_query_engine(files: list[str] | None = None):
     )
 
     return query_engine
+
 
 def get_query_engine_memoized(path: str):
     print("get_query_engine_memoized")
@@ -76,6 +82,7 @@ def get_query_engine_memoized(path: str):
     )
 
     return query_engine
+
 
 # util functions to interact with llama-index
 def get_chat_engine(system_prompt: str | None = None, files: list[str] | None = None):
@@ -100,9 +107,15 @@ Für das beantworten der Anfragen muss ich folgende Inhalte berücksichtigen. Ic
 """
 
     # seems to be MUCH BETTER WITHOUT the llm explicitly passed
-    chat_engine = index.as_chat_engine(llm=get_llm(), chat_mode=ChatMode.CONDENSE_PLUS_CONTEXT, system_prompt=system_prompt, context_prompt=context_prompt)
+    chat_engine = index.as_chat_engine(
+        llm=get_llm(),
+        chat_mode=ChatMode.CONDENSE_PLUS_CONTEXT,
+        system_prompt=system_prompt,
+        context_prompt=context_prompt,
+    )
 
     return chat_engine
+
 
 def get_chat_engine_memoized(path: str):
     print("get_chat_engine_memoized")
@@ -114,8 +127,7 @@ def get_chat_engine_memoized(path: str):
 
     # seems to be MUCH BETTER WITHOUT the llm explicitly passed
     chat_engine = index.as_chat_engine(
-        llm=get_llm(),
-        chat_mode=ChatMode.CONDENSE_PLUS_CONTEXT
+        llm=get_llm(), chat_mode=ChatMode.CONDENSE_PLUS_CONTEXT
     )
 
     return chat_engine

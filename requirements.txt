@@ -1,198 +1,210 @@
-aiohappyeyeballs==2.4.3 ; python_full_version == "3.12.5"
-aiohttp==3.11.4 ; python_full_version == "3.12.5"
-aiosignal==1.3.1 ; python_full_version == "3.12.5"
-annotated-types==0.7.0 ; python_full_version == "3.12.5"
-anyio==4.6.2.post1 ; python_full_version == "3.12.5"
-asgiref==3.8.1 ; python_full_version == "3.12.5"
-attrs==24.2.0 ; python_full_version == "3.12.5"
-backoff==2.2.1 ; python_full_version == "3.12.5"
-bcrypt==4.2.0 ; python_full_version == "3.12.5"
-beautifulsoup4==4.12.3 ; python_full_version == "3.12.5"
-build==1.2.2.post1 ; python_full_version == "3.12.5"
-cachetools==5.5.0 ; python_full_version == "3.12.5"
-certifi==2024.8.30 ; python_full_version == "3.12.5"
-charset-normalizer==3.4.0 ; python_full_version == "3.12.5"
-chroma-hnswlib==0.7.6 ; python_full_version == "3.12.5"
-chromadb==0.5.20 ; python_full_version == "3.12.5"
-ci-info==0.3.0 ; python_full_version == "3.12.5"
-click==8.1.7 ; python_full_version == "3.12.5"
-colorama==0.4.6 ; python_full_version == "3.12.5" and (platform_system == "Windows" or os_name == "nt" or sys_platform == "win32")
-coloredlogs==15.0.1 ; python_full_version == "3.12.5"
-configobj==5.0.9 ; python_full_version == "3.12.5"
-configparser==7.1.0 ; python_full_version == "3.12.5"
-dataclasses-json==0.6.7 ; python_full_version == "3.12.5"
-deprecated==1.2.15 ; python_full_version == "3.12.5"
-dirtyjson==1.0.8 ; python_full_version == "3.12.5"
-distro==1.9.0 ; python_full_version == "3.12.5"
-dnspython==2.7.0 ; python_full_version == "3.12.5"
-durationpy==0.9 ; python_full_version == "3.12.5"
-etelemetry==0.3.1 ; python_full_version == "3.12.5"
-fastapi==0.115.0 ; python_full_version == "3.12.5"
-filelock==3.16.1 ; python_full_version == "3.12.5"
-filetype==1.2.0 ; python_full_version == "3.12.5"
-fitz==0.0.1.dev2 ; python_full_version == "3.12.5"
-flatbuffers==24.3.25 ; python_full_version == "3.12.5"
-frozenlist==1.5.0 ; python_full_version == "3.12.5"
-fsspec==2024.10.0 ; python_full_version == "3.12.5"
-google-auth==2.36.0 ; python_full_version == "3.12.5"
-googleapis-common-protos==1.66.0 ; python_full_version == "3.12.5"
-greenlet==3.1.1 ; python_full_version == "3.12.5"
-grpcio==1.68.0 ; python_full_version == "3.12.5"
-h11==0.14.0 ; python_full_version == "3.12.5"
-httpcore==1.0.7 ; python_full_version == "3.12.5"
-httplib2==0.22.0 ; python_full_version == "3.12.5"
-httptools==0.6.4 ; python_full_version == "3.12.5"
-httpx==0.27.2 ; python_full_version == "3.12.5"
-huggingface-hub==0.26.2 ; python_full_version == "3.12.5"
-huggingface-hub[inference]==0.26.2 ; python_full_version == "3.12.5"
-humanfriendly==10.0 ; python_full_version == "3.12.5"
-idna==3.10 ; python_full_version == "3.12.5"
-importlib-metadata==8.5.0 ; python_full_version == "3.12.5"
-importlib-resources==6.4.5 ; python_full_version == "3.12.5"
-jinja2==3.1.4 ; python_full_version == "3.12.5"
-jiter==0.7.1 ; python_full_version == "3.12.5"
-joblib==1.4.2 ; python_full_version == "3.12.5"
-jsonpatch==1.33 ; python_full_version == "3.12.5"
-jsonpointer==3.0.0 ; python_full_version == "3.12.5"
-kubernetes==31.0.0 ; python_full_version == "3.12.5"
-langchain-core==0.3.19 ; python_full_version == "3.12.5"
-langchain-text-splitters==0.3.2 ; python_full_version == "3.12.5"
-langchain==0.3.7 ; python_full_version == "3.12.5"
-langsmith==0.1.143 ; python_full_version == "3.12.5"
-llama-cloud==0.1.5 ; python_full_version == "3.12.5"
-llama-index-agent-openai==0.4.0 ; python_full_version == "3.12.5"
-llama-index-cli==0.4.0 ; python_full_version == "3.12.5"
-llama-index-core==0.12.0 ; python_full_version == "3.12.5"
-llama-index-embeddings-huggingface==0.4.0 ; python_full_version == "3.12.5"
-llama-index-embeddings-ollama==0.4.0 ; python_full_version == "3.12.5"
-llama-index-embeddings-openai==0.3.0 ; python_full_version == "3.12.5"
-llama-index-indices-managed-llama-cloud==0.6.1 ; python_full_version == "3.12.5"
-llama-index-legacy==0.9.48.post4 ; python_full_version == "3.12.5"
-llama-index-llms-ollama==0.4.0 ; python_full_version == "3.12.5"
-llama-index-llms-openai==0.3.0 ; python_full_version == "3.12.5"
-llama-index-multi-modal-llms-openai==0.3.0 ; python_full_version == "3.12.5"
-llama-index-program-openai==0.3.0 ; python_full_version == "3.12.5"
-llama-index-question-gen-openai==0.3.0 ; python_full_version == "3.12.5"
-llama-index-readers-file==0.4.0 ; python_full_version == "3.12.5"
-llama-index-readers-llama-parse==0.4.0 ; python_full_version == "3.12.5"
-llama-index-vector-stores-chroma==0.4.0 ; python_full_version == "3.12.5"
-llama-index-vector-stores-mongodb==0.5.0 ; python_full_version == "3.12.5"
-llama-index==0.12.0 ; python_full_version == "3.12.5"
-llama-parse==0.5.14 ; python_full_version == "3.12.5"
-looseversion==1.3.0 ; python_full_version == "3.12.5"
-lxml==5.3.0 ; python_full_version == "3.12.5"
-markdown-it-py==3.0.0 ; python_full_version == "3.12.5"
-markupsafe==3.0.2 ; python_full_version == "3.12.5"
-marshmallow==3.23.1 ; python_full_version == "3.12.5"
-mdurl==0.1.2 ; python_full_version == "3.12.5"
-mmh3==5.0.1 ; python_full_version == "3.12.5"
-monotonic==1.6 ; python_full_version == "3.12.5"
-motor==3.6.0 ; python_full_version == "3.12.5"
-mpmath==1.3.0 ; python_full_version == "3.12.5"
-multidict==6.1.0 ; python_full_version == "3.12.5"
-mypy-extensions==1.0.0 ; python_full_version == "3.12.5"
-nest-asyncio==1.6.0 ; python_full_version == "3.12.5"
-networkx==3.4.2 ; python_full_version == "3.12.5"
-nibabel==5.3.2 ; python_full_version == "3.12.5"
-nipype==1.9.0 ; python_full_version == "3.12.5"
-nltk==3.9.1 ; python_full_version == "3.12.5"
-numpy==1.26.4 ; python_full_version == "3.12.5"
-nvidia-cublas-cu12==12.4.5.8 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cuda-cupti-cu12==12.4.127 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cuda-nvrtc-cu12==12.4.127 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cuda-runtime-cu12==12.4.127 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cudnn-cu12==9.1.0.70 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cufft-cu12==11.2.1.3 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-curand-cu12==10.3.5.147 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cusolver-cu12==11.6.1.9 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-cusparse-cu12==12.3.1.170 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-nccl-cu12==2.21.5 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-nvjitlink-cu12==12.4.127 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-nvidia-nvtx-cu12==12.4.127 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-oauthlib==3.2.2 ; python_full_version == "3.12.5"
-ollama==0.3.3 ; python_full_version == "3.12.5"
-onnxruntime==1.20.0 ; python_full_version == "3.12.5"
-openai==1.54.4 ; python_full_version == "3.12.5"
-opentelemetry-api==1.28.2 ; python_full_version == "3.12.5"
-opentelemetry-exporter-otlp-proto-common==1.28.2 ; python_full_version == "3.12.5"
-opentelemetry-exporter-otlp-proto-grpc==1.28.2 ; python_full_version == "3.12.5"
-opentelemetry-instrumentation-asgi==0.49b2 ; python_full_version == "3.12.5"
-opentelemetry-instrumentation-fastapi==0.49b2 ; python_full_version == "3.12.5"
-opentelemetry-instrumentation==0.49b2 ; python_full_version == "3.12.5"
-opentelemetry-proto==1.28.2 ; python_full_version == "3.12.5"
-opentelemetry-sdk==1.28.2 ; python_full_version == "3.12.5"
-opentelemetry-semantic-conventions==0.49b2 ; python_full_version == "3.12.5"
-opentelemetry-util-http==0.49b2 ; python_full_version == "3.12.5"
-orjson==3.10.11 ; python_full_version == "3.12.5"
-overrides==7.7.0 ; python_full_version == "3.12.5"
-packaging==24.2 ; python_full_version == "3.12.5"
-pandas==2.2.3 ; python_full_version == "3.12.5"
-pathlib==1.0.1 ; python_full_version == "3.12.5"
-pillow==11.0.0 ; python_full_version == "3.12.5"
-posthog==3.7.0 ; python_full_version == "3.12.5"
-propcache==0.2.0 ; python_full_version == "3.12.5"
-protobuf==5.28.3 ; python_full_version == "3.12.5"
-prov==2.0.0 ; python_full_version == "3.12.5"
-puremagic==1.28 ; python_full_version == "3.12.5"
-pyasn1-modules==0.4.1 ; python_full_version == "3.12.5"
-pyasn1==0.6.1 ; python_full_version == "3.12.5"
-pydantic-core==2.23.2 ; python_full_version == "3.12.5"
-pydantic==2.9.0 ; python_full_version == "3.12.5"
-pydot==3.0.2 ; python_full_version == "3.12.5"
-pygments==2.18.0 ; python_full_version == "3.12.5"
-pymongo==4.9 ; python_full_version == "3.12.5"
-pyparsing==3.2.0 ; python_full_version == "3.12.5"
-pypdf==5.1.0 ; python_full_version == "3.12.5"
-pypika==0.48.9 ; python_full_version == "3.12.5"
-pyproject-hooks==1.2.0 ; python_full_version == "3.12.5"
-pyreadline3==3.5.4 ; sys_platform == "win32" and python_full_version == "3.12.5"
-python-dateutil==2.9.0.post0 ; python_full_version == "3.12.5"
-python-dotenv==1.0.1 ; python_full_version == "3.12.5"
-pytz==2024.2 ; python_full_version == "3.12.5"
-pyxnat==1.6.2 ; python_full_version == "3.12.5"
-pyyaml==6.0.2 ; python_full_version == "3.12.5"
-rdflib==7.1.1 ; python_full_version == "3.12.5"
-regex==2024.11.6 ; python_full_version == "3.12.5"
-requests-oauthlib==2.0.0 ; python_full_version == "3.12.5"
-requests-toolbelt==1.0.0 ; python_full_version == "3.12.5"
-requests==2.32.3 ; python_full_version == "3.12.5"
-rich==13.9.4 ; python_full_version == "3.12.5"
-rsa==4.9 ; python_full_version == "3.12.5"
-safetensors==0.4.5 ; python_full_version == "3.12.5"
-scikit-learn==1.5.2 ; python_full_version == "3.12.5"
-scipy==1.14.1 ; python_full_version == "3.12.5"
-sentence-transformers==3.3.1 ; python_full_version == "3.12.5"
-setuptools==75.5.0 ; python_full_version == "3.12.5"
-shellingham==1.5.4 ; python_full_version == "3.12.5"
-simplejson==3.19.3 ; python_full_version == "3.12.5"
-six==1.16.0 ; python_full_version == "3.12.5"
-sniffio==1.3.1 ; python_full_version == "3.12.5"
-soupsieve==2.6 ; python_full_version == "3.12.5"
-sqlalchemy==2.0.36 ; python_full_version == "3.12.5"
-sqlalchemy[asyncio]==2.0.36 ; python_full_version == "3.12.5"
-starlette==0.38.6 ; python_full_version == "3.12.5"
-striprtf==0.0.26 ; python_full_version == "3.12.5"
-sympy==1.13.1 ; python_full_version == "3.12.5"
-tenacity==8.5.0 ; python_full_version == "3.12.5"
-threadpoolctl==3.5.0 ; python_full_version == "3.12.5"
-tiktoken==0.8.0 ; python_full_version == "3.12.5"
-tokenizers==0.20.3 ; python_full_version == "3.12.5"
-torch==2.5.1 ; python_full_version == "3.12.5"
-tqdm==4.67.0 ; python_full_version == "3.12.5"
-traits==6.4.3 ; python_full_version == "3.12.5"
-transformers==4.46.3 ; python_full_version == "3.12.5"
-triton==3.1.0 ; platform_system == "Linux" and platform_machine == "x86_64" and python_full_version == "3.12.5"
-typer==0.13.1 ; python_full_version == "3.12.5"
-typing-extensions==4.12.2 ; python_full_version == "3.12.5"
-typing-inspect==0.9.0 ; python_full_version == "3.12.5"
-tzdata==2024.2 ; python_full_version == "3.12.5"
-urllib3==2.2.3 ; python_full_version == "3.12.5"
-uvicorn==0.32.0 ; python_full_version == "3.12.5"
-uvicorn[standard]==0.32.0 ; python_full_version == "3.12.5"
-uvloop==0.21.0 ; (sys_platform != "win32" and sys_platform != "cygwin") and platform_python_implementation != "PyPy" and python_full_version == "3.12.5"
-watchfiles==0.24.0 ; python_full_version == "3.12.5"
-websocket-client==1.8.0 ; python_full_version == "3.12.5"
-websockets==14.1 ; python_full_version == "3.12.5"
-wrapt==1.16.0 ; python_full_version == "3.12.5"
-yarl==1.17.2 ; python_full_version == "3.12.5"
-zipp==3.21.0 ; python_full_version == "3.12.5"
+aiohappyeyeballs==2.4.3
+aiohttp==3.11.4
+aiosignal==1.3.1
+annotated-types==0.7.0
+anthropic==0.46.0
+anyio==4.6.2.post1
+asgiref==3.8.1
+attrs==24.2.0
+backoff==2.2.1
+bcrypt==4.2.0
+beautifulsoup4==4.12.3
+build==1.2.2.post1
+cachetools==5.5.0
+certifi==2024.8.30
+charset-normalizer==3.4.0
+chroma-hnswlib==0.7.6
+chromadb==0.5.20
+ci-info==0.3.0
+click==8.1.8
+coloredlogs==15.0.1
+configobj==5.0.9
+configparser==7.1.0
+dataclasses-json==0.6.7
+Deprecated==1.2.15
+dirtyjson==1.0.8
+distro==1.9.0
+dnspython==2.7.0
+docker==7.1.0
+durationpy==0.9
+einops==0.8.1
+etelemetry==0.3.1
+fastapi==0.115.0
+fastembed==0.6.0
+filelock==3.16.1
+filetype==1.2.0
+fitz==0.0.1.dev2
+flatbuffers==24.3.25
+frozenlist==1.5.0
+fsspec==2024.10.0
+ftfy==6.3.1
+google-auth==2.36.0
+google-genai==1.2.0
+googleapis-common-protos==1.66.0
+greenlet==3.1.1
+grpcio==1.68.0
+grpcio-tools==1.68.0
+h11==0.14.0
+h2==4.2.0
+hpack==4.1.0
+httpcore==1.0.7
+httplib2==0.22.0
+httptools==0.6.4
+httpx==0.27.2
+huggingface-hub==0.26.2
+humanfriendly==10.0
+hyperframe==6.1.0
+idna==3.10
+importlib_metadata==8.5.0
+importlib_resources==6.4.5
+Jinja2==3.1.4
+jiter==0.7.1
+joblib==1.4.2
+jsonpatch==1.33
+jsonpointer==3.0.0
+kubernetes==31.0.0
+langchain==0.3.7
+langchain-core==0.3.19
+langchain-text-splitters==0.3.2
+langsmith==0.1.143
+llama-cloud==0.1.5
+llama-index==0.12.0
+llama-index-agent-openai==0.4.0
+llama-index-cli==0.4.0
+llama-index-core==0.12.24.post1
+llama-index-embeddings-fastembed==0.3.0
+llama-index-embeddings-huggingface==0.4.0
+llama-index-embeddings-ollama==0.4.0
+llama-index-embeddings-openai==0.3.0
+llama-index-indices-managed-llama-cloud==0.6.1
+llama-index-legacy==0.9.48.post4
+llama-index-llms-ollama==0.4.0
+llama-index-llms-openai==0.3.0
+llama-index-multi-modal-llms-openai==0.3.0
+llama-index-postprocessor-colbert-rerank==0.3.0
+llama-index-program-openai==0.3.0
+llama-index-question-gen-openai==0.3.0
+llama-index-readers-file==0.4.0
+llama-index-readers-llama-parse==0.4.0
+llama-index-vector-stores-chroma==0.4.0
+llama-index-vector-stores-mongodb==0.5.0
+llama-index-vector-stores-qdrant==0.4.3
+llama-parse==0.5.14
+loguru==0.7.3
+looseversion==1.3.0
+lxml==5.3.0
+markdown-it-py==3.0.0
+markdown2==2.5.3
+markdownify==0.13.1
+marker-pdf==1.6.1
+MarkupSafe==3.0.2
+marshmallow==3.23.1
+mdurl==0.1.2
+mmh3==5.0.1
+monotonic==1.6
+motor==3.6.0
+mpmath==1.3.0
+multidict==6.1.0
+mypy-extensions==1.0.0
+nest-asyncio==1.6.0
+networkx==3.4.2
+nibabel==5.3.2
+nipype==1.9.0
+nltk==3.9.1
+numpy==1.26.4
+oauthlib==3.2.2
+ollama==0.3.3
+onnxruntime==1.21.0
+openai==1.54.4
+opencv-python-headless==4.11.0.86
+opentelemetry-api==1.28.2
+opentelemetry-exporter-otlp-proto-common==1.28.2
+opentelemetry-exporter-otlp-proto-grpc==1.28.2
+opentelemetry-instrumentation==0.49b2
+opentelemetry-instrumentation-asgi==0.49b2
+opentelemetry-instrumentation-fastapi==0.49b2
+opentelemetry-proto==1.28.2
+opentelemetry-sdk==1.28.2
+opentelemetry-semantic-conventions==0.49b2
+opentelemetry-util-http==0.49b2
+orjson==3.10.11
+overrides==7.7.0
+packaging==24.2
+pandas==2.2.3
+pathlib==1.0.1
+pdftext==0.6.2
+pillow==10.4.0
+platformdirs==4.3.6
+portalocker==2.10.1
+posthog==3.7.0
+propcache==0.2.0
+protobuf==5.28.3
+prov==2.0.0
+puremagic==1.28
+py_rust_stemmers==0.1.5
+pyasn1==0.6.1
+pyasn1_modules==0.4.1
+pydantic==2.9.0
+pydantic-settings==2.8.1
+pydantic_core==2.23.2
+pydot==3.0.2
+Pygments==2.18.0
+pymongo==4.9
+pyparsing==3.2.0
+pypdf==5.1.0
+PyPDF2==3.0.1
+pypdfium2==4.30.0
+PyPika==0.48.9
+pyproject_hooks==1.2.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+pytz==2024.2
+pyxnat==1.6.2
+PyYAML==6.0.2
+qdrant-client==1.13.3
+RapidFuzz==3.12.2
+rdflib==7.1.1
+regex==2024.11.6
+requests==2.32.3
+requests-oauthlib==2.0.0
+requests-toolbelt==1.0.0
+rich==13.9.4
+rsa==4.9
+safetensors==0.4.5
+scikit-learn==1.6.1
+scipy==1.14.1
+sentence-transformers==3.3.1
+setuptools==75.5.0
+shellingham==1.5.4
+simplejson==3.19.3
+six==1.16.0
+sniffio==1.3.1
+soupsieve==2.6
+SQLAlchemy==2.0.36
+starlette==0.38.6
+striprtf==0.0.26
+surya-ocr==0.13.0
+sympy==1.13.1
+tenacity==8.5.0
+testcontainers==4.9.2
+threadpoolctl==3.5.0
+tiktoken==0.8.0
+tokenizers==0.20.3
+torch==2.5.1
+tqdm==4.67.0
+traits==6.4.3
+transformers==4.46.3
+typer==0.13.1
+typing-inspect==0.9.0
+typing_extensions==4.12.2
+tzdata==2024.2
+urllib3==2.2.3
+uvicorn==0.32.0
+uvloop==0.21.0
+watchfiles==0.24.0
+wcwidth==0.2.13
+websocket-client==1.8.0
+websockets==14.1
+wrapt==1.16.0
+yarl==1.17.2
+zipp==3.21.0
