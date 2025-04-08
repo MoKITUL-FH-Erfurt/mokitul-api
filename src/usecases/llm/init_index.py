@@ -44,6 +44,7 @@ class LLamaIndexHolder(metaclass=SingletonMeta):
             top_n=config.top_n_count_reranker,
             model="colbert-ir/colbertv2.0",
             tokenizer="colbert-ir/colbertv2.0",
+            device=config.device,
             keep_retrieval_score=True,
         )
 
