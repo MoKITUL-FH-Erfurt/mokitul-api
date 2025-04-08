@@ -28,6 +28,9 @@ class LlamaIndexRAGConfig(BaseModel):
 
 
 class LLamaIndexHolder(metaclass=SingletonMeta):
+    """
+    Holdes References to AI Models and Indexes
+    """
     _index: Optional[VectorStoreIndex]
     _colbert_reranker: Optional[ColbertRerank]
     _embedding_model: Optional[HuggingFaceEmbedding]

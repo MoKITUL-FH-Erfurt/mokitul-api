@@ -47,15 +47,25 @@ from usecases.vector_db import VectorDBUsecases
 
 
 class Application:
+    """
+    Application class for managing the application lifecycle.
+    It is a singleton class that holds the application state and configuration.
+
+    Allows a startup "light" mode that only loads the configuration.
+    This setup is nessary for the fastapi server to start up.
+    We use uvicorn to start the server.
+    for some reason inside fastapi can't access the singleton instance that hast been created before.
+    This is a workaround to load the config before the server starts, allowing access to the config.
+
+    The application itself will be started inside of fastapi.
+    """
     _instance = None
-    _lock = threading.Lock()  # A lock for thread-safe singleton
+    _lock = threading.Lock()
 
     def __new__(cls):
         with cls._lock:
             if cls._instance is None:
-                # If an instance does not exist, create it and store it
                 instance = super().__new__(cls)
-                instance._initialized = False  # Add an initialization flag
                 cls._instance = instance
         return cls._instance
 
@@ -64,10 +74,12 @@ class Application:
         return Application()
 
     def __init__(self) -> None:
-        if not self._initialized:  # Only initialize if not already initialized
-            self._initialized = True
+        ...
 
     def startup_light(self):
+        """
+        Will only load the config and not start the application.
+        """
         ConfigLoader.load_config(ENV_VARS)
 
     async def _async_startup(self):

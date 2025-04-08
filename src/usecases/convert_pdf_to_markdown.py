@@ -8,6 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class PdfConverterUsecase(metaclass=SingletonMeta):
+    """
+    Usecase for converting PDF files to Markdown.
+    Will return the converted pages as a ordered list of strings.
+    """
     _pdf_converter: PDFConverter
 
     def __init__(self, pdf_converter: MarkerPDFConverter) -> None:

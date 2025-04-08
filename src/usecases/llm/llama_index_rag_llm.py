@@ -68,6 +68,8 @@ class LLamaIndexRAGLLM(RAGLLM):
             filters=metadata_filters,
             verbose=True,
         )
+
+        # last massage is the new user input, therefore we remove it from the chat history
         last_message = messages[len(messages) - 1]
         messages.remove(last_message)
         chat_history = self.__convert_to_chat_history(messages)
@@ -105,6 +107,9 @@ class LLamaIndexRAGLLM(RAGLLM):
             for message in messages
         ]
 
+
+# This is the default context prompt template for the LLM.
+# it could be made a configurable parameter, but because you need to have knowledge about the interaction with LLamaIndex we still hide it
 
 DEFAULT_CONTEXT_PROMPT_TEMPLATE = """
 Im Folgenden siehst du ein freundliches Gespräch zwischen einem Benutzer und dir dem KI-Assistenten.
