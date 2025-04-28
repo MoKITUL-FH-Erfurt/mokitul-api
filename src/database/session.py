@@ -59,12 +59,16 @@ class MongoDatabaseSession:
         MongoDatabaseSession(config)
 
     @staticmethod
+    @staticmethod
     def get_instance() -> motor.motor_asyncio.AsyncIOMotorDatabase[Any]:
-        """Return the MongoDB database instance."""
-        assert MongoDatabaseSession._instance is not None, (
-            "Database is not initialized."
-        )
-        return MongoDatabaseSession._instance._database
+            """Return the MongoDB database instance."""
+            assert MongoDatabaseSession._instance is not None, (
+                "Database is not initialized."
+            )
+            assert MongoDatabaseSession._instance._database is not None, (
+                "Database is not initialized."
+            )
+            return MongoDatabaseSession._instance._database
 
     def _initialize(self, db_url: str, database_name: str):
         """Initialize the MongoDB client and select the database."""

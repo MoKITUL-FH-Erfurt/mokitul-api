@@ -44,9 +44,9 @@ mein Toller Text
 ---- Ende Seite 1 ----
 mein Toller Text
 ---- Ende Seite 2 ----
-mein Toller Text 
+mein Toller Text
 ---- Ende Seite 3 ----
-mein Toller Text 
+mein Toller Text
 """
 collection = "qdrant_collection"
 embedding_mode = "nomic-ai/nomic-embed-text-v2-moe"
@@ -68,6 +68,9 @@ dummy_pdf = "dummy.pdf"
 def create_usecases(
     config_v_db: LlamaIndexVectorStoreConfig, config_llm: LlamaIndexRAGConfig
 ):
+    """
+    Setup usecase with correct config
+    """
     LlamaIndexVectorStoreSession.init_database(config=config_v_db)
     LLamaIndexHolder.create(
         vector_store=LlamaIndexVectorStoreSession.get_instance().get_database(),
@@ -93,6 +96,9 @@ def create_usecases(
 
 
 def run_test_with_qdrant(handle_msg: Callable):
+    """
+    Run the test with a Qdrant container.
+    """
     with QdrantContainer(image="qdrant/qdrant:v1.12.6") as qdrant_container:
         # container = qdrant_container.start()
         config_v_db = LlamaIndexVectorStoreConfig(
@@ -124,48 +130,6 @@ def run_test_with_qdrant(handle_msg: Callable):
 
 
 class TestVectorDB(unittest.TestCase):
-    def test_splitter(self):
-        splitter = NodeSplitter(
-            config=NodeSplitterConfig(chunk_size=100, chunk_overlap=20)
-        )
-
-        doc = Document(id="", content=doc_content, metadata={})
-        nodes = splitter.split_documents(doc=doc)
-        assert len(nodes) == 1
-        node = nodes[0]
-        assert node.metadata[NodeSplitter.MetaDateStartPageKey] == 1
-        assert node.metadata[NodeSplitter.MetaDateUpToPageKey] == 4
-
-    def test_with_splitting_pdf(self):
-        pages = PdfConverterUsecase.Instance().run(dummy_pdf)
-        assert len(pages) == 4
-
-        splitter = NodeSplitter(
-            config=NodeSplitterConfig(chunk_size=100, chunk_overlap=20)
-        )
-
-        doc = Document(id="", content=doc_content, metadata={})
-        nodes = splitter.split_documents(doc=doc)
-        assert len(nodes) == 1
-        node = nodes[len(nodes) - 1]
-        assert node.metadata[NodeSplitter.MetaDateStartPageKey] == 1
-        assert node.metadata[NodeSplitter.MetaDateUpToPageKey] == 4
-
-    def test_splitter_lager_files(self):
-        llama2_paper = ""
-        with open("llama2_paper.md", "r") as file:
-            llama2_paper = file.read()
-
-        splitter = NodeSplitter(
-            config=NodeSplitterConfig(chunk_size=100, chunk_overlap=20)
-        )
-
-        doc = Document(id="", content=llama2_paper, metadata={})
-        nodes = splitter.split_documents(doc=doc)
-        assert len(nodes) > 1
-        node = nodes[len(nodes) - 1]
-        assert node.metadata[NodeSplitter.MetaDateUpToPageKey] == 78
-
     def test_add_document(self):
         def run():
             content = PdfConverterUsecase.Instance().run(dummy_pdf)

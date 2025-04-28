@@ -21,7 +21,14 @@ init_logging("INFO")
 logger = logging.getLogger(__name__)
 
 
+"""
+Database Layer Tests
+"""
+
 async def run_test_with_mongo(handle_msg: Callable):
+    """
+    Wrapper function to run the test with a MongoDB container.
+    """
     with MongoDbContainer(username="test", password="test") as mongodb:
         config = DatabaseConfig(
             host=mongodb.get_container_host_ip(),
@@ -43,6 +50,9 @@ async def create_database(config: DatabaseConfig):
 
 
 async def create_conversatoin() -> str:
+    """
+    helper function to create a conversation if the tests needs an already existing one.
+    """
     result = await ConversationUsecases.Instance().create_conversation(
         Conversation(
             user=USER_DUMMY_ID,
@@ -82,6 +92,12 @@ class TestConversationDatbase(unittest.IsolatedAsyncioTestCase):
             assert result.is_ok()
 
             id = result.get_ok()
+
+            # test all read operations
+            # in the futur each operation should be tested in a separate test
+            # but for the meoment this save a lot of time starting each time a new container
+            # if the read operations get complexer or more operations are added
+            # please refactor this
 
             result = await ConversationUsecases.Instance().find_conversation(id)
             assert result.is_ok()

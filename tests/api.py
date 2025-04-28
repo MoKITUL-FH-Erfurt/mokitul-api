@@ -39,6 +39,8 @@ FILE_2_DUMMY_ID = "dummy_file_id_2"
 CONVERSATION_DUMMY_ID = "65d7b8f9a5e9c3d4f1a2b3c4"
 METADATA_DUMMY_ATTRIBUTE = "test_attribute"
 METADATA_DUMMY_VALUE = "test_value"
+API_PREFIX: str = "/api/v1"
+CONVERATION_PATH = f"{API_PREFIX}/conversations/"
 
 """
 The Tests in this file are just to test if the dataflow works.
@@ -49,6 +51,7 @@ init_logging("INFO")
 logger = logging.getLogger(__name__)
 
 
+## Constants
 collection = "qdrant_collection"
 embedding_mode = "nomic-ai/nomic-embed-text-v2-moe"
 chunk_size = 128
@@ -72,54 +75,27 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# PUBLISHED version 1 of the API
 v1 = FastAPI()
-
 conversationAPI = ConversationAPI(config=ConvesationAPIConfig(start_llm_path=True))
 
 v1.include_router(
     conversationAPI.get_rounter(), tags=["Conversation"], prefix="/conversations"
 )
 v1.include_router(MoodleRouter, tags=["Moodle"], prefix="/moodle")
-
-# mount the playground and v1 routers
 app.mount("/v1", v1)
 
-# client = TestClient(app)
-
-API_PREFIX: str = "/api/v1"
-CONVERATION_PATH = f"{API_PREFIX}/conversations/"
 
 
-def get_user_conversation_path(user_id: str) -> str:
-    return f"{CONVERATION_PATH}{user_id}"
 
-
-def get_chat_path(chat_id: str) -> str:
-    return f"{CONVERATION_PATH}{chat_id}/message"
-
-
-def query_conversation_path(
-    user_id: str,
-    course_id: str | None = None,
-    file_id: str | None = None,
-    scope: str | None = None,
-) -> str:
-    query_params = {"user_id": user_id}
-
-    if course_id:
-        query_params["course_id"] = course_id
-    if file_id:
-        query_params["file_id"] = file_id
-    if scope:
-        query_params["scope"] = scope
-
-    return f"{CONVERATION_PATH}?{urlencode(query_params)}"
 
 
 def create_usecases(
     config_v_db: LlamaIndexVectorStoreConfig, config_llm: LlamaIndexRAGConfig
 ):
+    """
+    Start the usecases
+    the create method is used to create the usecases, they also reinitialize them for every test
+    """
     LlamaIndexVectorStoreSession.init_database(config=config_v_db)
     LLamaIndexHolder.create(
         vector_store=LlamaIndexVectorStoreSession.get_instance().get_database(),
@@ -148,13 +124,15 @@ def create_usecases(
 
 async def create_database(config: DatabaseConfig):
     MongoDatabaseSession.init_database(config=config)
-
     conversation_database = ConversationDatabase()
     await conversation_database.start()
     ConversationUsecases.create(conversation_database)
 
 
 async def run_test_with_container(handle_msg: Callable):
+    """
+    Wrapper function to run the test with nessary containers
+    """
     with QdrantContainer(image="qdrant/qdrant:v1.12.6") as qdrant_container:
         with MongoDbContainer(username="test", password="test") as mongodb:
             config = DatabaseConfig(
@@ -196,6 +174,10 @@ async def run_test_with_container(handle_msg: Callable):
 
 class TestVectorDB(unittest.IsolatedAsyncioTestCase):
     async def test_integration_happy_path(self):
+        """
+        This is an happy integration test
+        only to check if basic functionality works
+        """
         async def run():
             async with AsyncClient(app=app, base_url="http://test") as client:
                 response = await client.post(
@@ -319,6 +301,7 @@ class TestVectorDB(unittest.IsolatedAsyncioTestCase):
         await run_test_with_container(run)
 
 
+
 class MoodleDummyClient(MoodleClient):
     def download(self, file_id: str) -> MoodleFile:
         return MoodleFile(
@@ -330,3 +313,31 @@ class MoodleDummyClient(MoodleClient):
 
     def get_file_ids_for_course(self, courseId: str) -> list[str]:
         return [FILE_DUMMY_ID, FILE_2_DUMMY_ID]
+
+def get_user_conversation_path(user_id: str) -> str:
+    return f"{CONVERATION_PATH}{user_id}"
+
+
+def get_chat_path(chat_id: str) -> str:
+    return f"{CONVERATION_PATH}{chat_id}/message"
+
+
+def query_conversation_path(
+    user_id: str,
+    course_id: str | None = None,
+    file_id: str | None = None,
+    scope: str | None = None,
+) -> str:
+    """
+    builds the query path for the conversation
+    """
+    query_params = {"user_id": user_id}
+
+    if course_id:
+        query_params["course_id"] = course_id
+    if file_id:
+        query_params["file_id"] = file_id
+    if scope:
+        query_params["scope"] = scope
+
+    return f"{CONVERATION_PATH}?{urlencode(query_params)}"

@@ -41,6 +41,13 @@ class ConvesationAPIConfig(BaseModel):
 
 
 class ConversationAPI:
+    """
+    API for managing conversations.
+    It provides endpoints for creating, updating, deleting, and retrieving conversations.
+    It also provides an endpoint for sending messages to a conversation and receiving a response from the LLM.
+    This Endpoint is only available if the start_llm_path is set to True.
+    Prevents unnecessary usage of resources.
+    """
     _config: ConvesationAPIConfig
     _router: APIRouter
 
@@ -65,7 +72,6 @@ class ConversationAPI:
             result = await ConversationUsecases.Instance().find_by_context(
                 user_id=user_id, course_id=course_id, file_id=file_id, scope=scope
             )
-            # await sleep(120);
             if result.is_error():
                 raise result.get_error()
             return result.get_ok()
@@ -134,10 +140,10 @@ class ConversationAPI:
     def register_llm_path(self):
         @self._router.put("/{conversation_id}/message")
         async def send_message(conversation_id: str, message: MessageRequest):
+            # Check if the conversation exists
             result = await ConversationUsecases.Instance().find_conversation(
                 conversation_id
             )
-
             if result.is_error():
                 raise result.get_error()
             conversation = result.get_ok()
@@ -147,8 +153,10 @@ class ConversationAPI:
             )
 
             file_ids = conversation.context.fileIds
-            logger.error(conversation.context)
             if conversation.context.scope == ChatScope.course.value:
+                # If the scope is course, we need to get the file ids from the course
+                # allows to have all the files in the course
+                # nessesary to consider new files
                 assert conversation.context.courseId is not None
                 logging.info(
                     "Getting files for course: ", conversation.context.courseId
@@ -157,13 +165,16 @@ class ConversationAPI:
                     course_id=conversation.context.courseId
                 )
 
+            # from the file ids, remove the empty ones
             file_ids.remove("") if "" in file_ids else None
             logging.info(f"Ensuring File IDs: {file_ids}")
             if result.is_error():
                 raise result.get_error()
 
+            # appand the user message to the conversation
             conversation.messages.append(user_message)
 
+            # download the files and convert them to markdown and store them in the vector db
             for file_id in file_ids:
                 file = MoodleUsecase.Instance().download_file(file_id=file_id)
                 if file.has_been_downloaded:
@@ -178,6 +189,7 @@ class ConversationAPI:
                         doc=Document(id=file_id, content=pages, metadata=metadata)
                     )
 
+            # RAG part, consider only relevant to the conversation
             filters = {"file_id": file_ids}
             response = AskLLMUsecase.Instance().run(
                 messages=conversation.messages, filters=filters, model=message.model
@@ -186,6 +198,7 @@ class ConversationAPI:
             if response.is_error():
                 raise response.get_error()
 
+            # append the ai message to the conversation
             response_message: LLMResponse = response.get_ok()
 
             result = await ConversationUsecases.Instance().appand_messages(

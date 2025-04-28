@@ -4,6 +4,10 @@ from moodle.downloads import MoodleClient, MoodleFile
 
 
 class MoodleUsecase(metaclass=SingletonMeta):
+    """
+    Usecase for the interaction with the Moodle API.
+    """
+
     _moodle_client: MoodleClient
 
     def __init__(self, moodle_client: MoodleClient) -> None:

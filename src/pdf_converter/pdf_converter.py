@@ -20,6 +20,14 @@ class MarkerPDFConverterConfig(BaseModel):
 
 
 class MarkerPDFConverter(PDFConverter):
+    """
+    PDF converter using Marker.
+    Github: https://github.com/VikParuchuri/marker
+    Iterares over the pages of the PDF and converts each page to markdown.
+    At the moment of writing, the converter is not able to convert the entire PDF in one go while holding the page context.
+    At least to my knowledge.
+    Therefore, we iterate over the pages and convert each page to markdown.
+    """
     converter: PdfConverter
     config: MarkerPDFConverterConfig
 

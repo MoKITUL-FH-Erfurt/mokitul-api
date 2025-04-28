@@ -10,9 +10,6 @@ from textwrap import wrap
 
 
 logger = logging.getLogger(__name__)
-# OMITTED
-#
-# This function is not used anymore.
 
 API_KEY_QUERY_PARAMETER = "api_key"
 FILE_ID_QUERY_PARAMETER = "file_id"
@@ -33,6 +30,12 @@ class MoodleFile(BaseModel):
 
 
 class MoodleClient(ABC):
+    """
+    Interface for Moodle client.
+    This interface defines the methods for downloading files from Moodle and getting file IDs for a course.
+    Can be extended in the future to support other Moodle operations.
+    """
+
     @abstractmethod
     def download(self, file_id: str) -> MoodleFile:
         pass
@@ -43,6 +46,9 @@ class MoodleClient(ABC):
 
 
 class MoodleClientImplementation(MoodleClient):
+    """
+    Implementation of the Moodle client.
+    """
     _config: MoodleConfig
 
     def __init__(self, config) -> None:
